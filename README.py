@@ -7,7 +7,8 @@ class TradePackage:
     def __init__(self, ticker_name="AAPL", trade_type="long"):
         self.ticker_name = ticker_name
         self.strategy = Strategy()
-        self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.open_time = None
+        self.close_time = None
         self.trade_id = f"{self.ticker_name}_{self.strategy.name}_{self.timestamp}"
         self.status = 'to_open'  # 'to_open', 'open', or 'closed'
         self.open_price = None
@@ -98,27 +99,60 @@ Data Housekeeping:
 - ingest data from data source
 - store in some way
 
-Opening Process:
-- Gather data for traded stock.
-- Calculate signals. For example, SMA, EMA, ATR, VWAP.
-- Check whether opening condition met. 
-- If condition met, open the trade and monitor in closing.
 
-Closing Process:
-- Find all open orders.
-- Check whether closing condition met.
-- If condition met, close the trade.
+Actual Trade Process:
+- Set up
+  - pick tickers to trade
+  - pick stragegy active time
+  - pick strategy
+  trade_package = {tickers: "AAPL", strat: "simple_SMA", active_time: "9:30AM-10:00AM", monitor_freq: "5m"}
+  strategy = {name: "simple_SMA", params: {SMA_length: 50}, size: 1000}
+  
+- Opening:
+  - Gather data for traded stock.
+  - Calculate indicatorsr/signals. For example, SMA, EMA, ATR, VWAP.
+  - create trade_package instance with status "to_open" and trade_id.
+  - Check whether opening condition met every monitor_freq.
+  - If condition met, open the trade and add a trade package instance with status "open" and trade_id.
+  - Record open_time, open_price, size, $ size
 
+-Closing:
+  - Find all trade_package instances with status "open".
+  - Check whether closing condition met every monitor_freq.
+  - If condition met, close the trade.
+  - Record close_time, close_price, size, $ size
+  
 Performance Backtesting:
 - determine what data to test. For example,
   - select tickers with market cap over 100M and in retail sector. Like Nike, TJX, etc.
   - select tickers with average daily volume past 30 days over 10M.
-  - select month/week/daytime to trade. For example, 2 hours after market open. In April before Option expiration. In tax season.
+  - select month/week/daytime to trade. For example, 2 hours after market open. In April before Option expiration. 
   - select data duration. For example, use past 3 years of data.
   - mark the selected market trend. For example, a bull, bear or flat market.
   - mark the volatility of the selected market.
 
 - determine strategy
+  - opening condition
+    - pick time of day/month of year. First hour of Friday. Every April. End of Year. 
+    - pick timeframe of data. OHLC data of 15m bar. Vol of daily bar.
+    - pick timeframe of indicator. SMA50 of 1d bar. SMA20w of weekly bar.
+    - pick indicator. SMA, EMA, ATR, VWAP.
+    - pick opening condition. SMA > price and EMA < price.
+    - pick opening size. 50% of account. 10% of account.
+    
+    
+  - closing condition
+    - stop loss
+      - sell when reaches fixed price. Loss has reached 5% or more.
+      - sell when reaches max trade duration. Trade lasted more than 2 weeks or other expected duration.
+    - take profit
+      - sell when reaches fixed price. Profit has reached 5% or more.
+      - sell when reaches max trade duration. Trade lasted more than 2 weeks or other expected duration.
 
-- determine metrics
+- determine metrics to backtest and evaluate
+    - Gross Profit/Gross Loss
+    - Pareto Index - check whether profit come from few or many trades.
+    - Calmar Ratio - (total return - risk free rate)/max drawdown
+    - Expected Value - Win Rate * Average Win Size - Loss Rate * Average Loss Size
+    
 """
