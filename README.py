@@ -96,6 +96,7 @@ class OHLCData:
         self.last_price = self.data['close'].iloc[-1] if not self.data.empty else None
 """
 Data Housekeeping:
+- binance for crypto and IB for stocks real time data
 - ingest data from data source
 - store in some way
 
@@ -116,12 +117,14 @@ Actual Trade Process:
   - If condition met, open the trade and add a trade package instance with status "open" and trade_id.
   - Record open_time, open_price, size, $ size
 
--Closing:
+- Closing:
   - Find all trade_package instances with status "open".
   - Check whether closing condition met every monitor_freq.
   - If condition met, close the trade.
   - Record close_time, close_price, size, $ size
   
+- Saving data:
+  - save trade_package instance to database
 Performance Backtesting:
 - determine what data to test. For example,
   - select tickers with market cap over 100M and in retail sector. Like Nike, TJX, etc.

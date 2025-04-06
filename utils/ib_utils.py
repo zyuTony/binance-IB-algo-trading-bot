@@ -1,8 +1,5 @@
 import pandas as pd 
-from datetime import datetime, timezone
-from binance.client import Client
-from binance.client import Client 
-from binance.enums import *
+from datetime import datetime
 import psycopg2
 from psycopg2 import OperationalError
     
