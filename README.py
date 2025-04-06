@@ -125,7 +125,15 @@ Actual Trade Process:
   
 - Saving data:
   - save trade_package instance to database
+  
 Performance Backtesting:
+- categorize dataset
+  - chunk the data into xx bars each.
+  - categorize data by market trend. Bull, Bear, Flat. ADX?
+  - categorize data by volatility. High, Low, Medium. avg vol beta?
+  - categorize data by sector. Retail, Tech, Finance, etc. manual?
+  - categorize data by market cap. Large cap, Mid cap, Small cap. by market cap and trading volume.
+
 - determine what data to test. For example,
   - select tickers with market cap over 100M and in retail sector. Like Nike, TJX, etc.
   - select tickers with average daily volume past 30 days over 10M.
